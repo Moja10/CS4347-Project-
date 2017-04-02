@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `simple_company`.`Purchase` (
   `productID` BIGINT NULL,
   `customerID` BIGINT NULL,
   `purchaseDate` DATE NULL,
-  `purrchaseAmount` DECIMAL NULL,
+  `purchaseAmount` DECIMAL NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
