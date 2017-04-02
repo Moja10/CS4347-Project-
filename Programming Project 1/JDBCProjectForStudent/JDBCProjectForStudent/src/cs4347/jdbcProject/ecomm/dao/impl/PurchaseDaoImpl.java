@@ -91,7 +91,7 @@ public class PurchaseDaoImpl implements PurchaseDAO
 		final String updateSQL = 
 				"UPDATE purchase SET productID = ?, customerID = ?, purchaseAmount = ?, purchaseDate = ?"
 				+ "WHERE id = ?";
-		if (purchase.getID == null) {
+		if (purchase.getId() == null) {
 			throw new DAOException("Trying to update Purchase with a NULL ID");
 		}
 		PreparedStatement ps = null;
