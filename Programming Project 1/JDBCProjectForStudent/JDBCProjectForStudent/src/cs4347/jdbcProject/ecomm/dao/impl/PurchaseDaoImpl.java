@@ -179,8 +179,62 @@ public class PurchaseDaoImpl implements PurchaseDAO
 		if((productID < 0)){
 			throw new DAOException("Invalid product ID provided");
 		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(querySQL);
+			ps.setLong(1, productID);  //Set positional parameter #1 in String selectSQL to var id
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
+				return null;
+			}
+			// Create a new list to store the results in
+			List<Purchase> result = new ArrayList<Purchase>();
+			while(rs.next()){
+				// Create a new Purchase object
+				Purchase purch = new Purchase();
+				// Fill Purchase object with values from ResultSet
+				purch.setId(rs.getLong("ID"));
+				purch.setProductID(rs.getLong("productID"));
+				purch.setCustomerID(rs.getLong("customerID"));
+				purch.setPurchaseAmount(rs.getDouble("purchaseAmount"));
+				purch.setPurchaseDate(rs.getDate("purchaseDate"));
+				// Add purch object to result arraylist
+				result.add(purch);
+			}
+			return result;
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
 	}
 	public PurchaseSummary retrievePurchaseSummary(Connection connection, Long customerID) throws SQLException, DAOException{
+		List<Purchase> PurchSumm = new ArrayList<Purchase>();
+		PurchSumm = retrieveForCustomerID(connection, customerID);
+		//Return min, max, and average purchase amounts for given customer id
+		PurchaseSummary result = new PurchaseSummary();
+		double minimum = 999999999999.99;
+		double maximum = 0;
+		double sum = 0;
+		for(Purchase purch : PurchSumm){
+			// Grab the currentValue once to use throughout this loop iteration
+			double currentValue = purch.getPurchaseAmount();
+			if(currentValue < minimum){
+				minimum = currentValue;
+			}
+			if(currentValue > maximum){
+				maximum = currentValue;
+			}
+			sum += currentValue;
+		}
+		double avg = (sum / PurchSumm.size());
 		
+		// PurchaseSummary attributes are floats, casts must be done
+		result.minPurchase = (float)minimum;
+		result.maxPurchase = (float)maximum;
+		result.avgPurchase = (float)avg;
+		
+		return result;
 	}
 }
