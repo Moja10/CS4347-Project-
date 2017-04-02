@@ -101,18 +101,108 @@ public class ProductDaoImpl implements ProductDAO
 		}
 	}
 
-	public int delete(Connection connection, Long id) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
+	public int delete(Connection connection, Long id) throws SQLException, DAOException{
+	
+		final String deleteSQL = 
+				"DELETE FROM purchase WHERE id = ?";
+		if(id == null){
+			throw new DAOException("Trying to delete from Product with a NULL ID");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(deleteSQL);
+			ps.setLong(1, id);
+			
+			int rows = ps.executeUpdate();
+			return rows;
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
 		return 0;
 	}
 
-	public List<Product> retrieveByCategory(Connection connection, int category) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	public Product retrieveByUPC(Connection connection, String upc) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
-		return null;
+	//List<Product> retrieveByCategory(Connection connection, int category) throws SQLException, DAOException;
+	public List<Product> retrieveByCategory(Connection connection, int prodCategory) throws SQLException, DAOException{
+		
+		final String query = "SELECT id, prodName, prodDescription, prodCategory, prodUPC FROM product WHERE prodCategory = ?";
+		
+		if((prodCategory < 0)){
+			throw new DAOException("Category does not exist.");
+		}
+		
+		//Prepared statement with sql code execution
+		PreparedStatement ps = null;
+		
+		try{
+			
+			ps = connection.prepareStatement(query);
+			ps.setInt(1, prodCategory);
+			ResultSet rs = ps.executeQuery();
+			
+			// if no object is left return null
+			if (!rs.next()) { return null; }
+			
+			// Create a new list and store in list
+			List<Product> result = new ArrayList<Product>();
+			// Store in result
+			while(rs.next()){
+				Product prod = new Product();
+				prod.setId(rs.getLong("ID"));
+				prod.setProdName(rs.getString("prodName"));
+				prod.setProdDescription(rs.getString("prodDescription"));
+				prod.setProdCategory(rs.getInt("prodCategory"));
+				prod.setProdUPC(rs.getString("prodUPC"));
+				result.add(prod);
+			}
+			
+			return result;
+		}
+		
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
+		
+	}
+	
+	
+	public Product retrieveByUPC(Connection connection, String prodUPC) throws SQLException, DAOException{
+		final String query = "SELECT id, prodName, prodDescription, prodCategory, prodUPC FROM product WHERE prodUPC = ?";
+		
+		if((prodUPC == null)){
+			throw new DAOException("Invalid UPC");
+		}
+		
+		//same as previous
+		PreparedStatement ps = null;
+		
+		try{
+			ps = connection.prepareStatement(query);
+			ps.setString(1, prodUPC);
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
+				return null;
+			}
+			// Create new product and return
+			Product prod = new Product();
+			prod.setId(rs.getLong("ID"));
+			prod.setProdName(rs.getString("prodName"));
+			prod.setProdDescription(rs.getString("prodDescription"));
+			prod.setProdCategory(rs.getInt("prodCategory"));
+			prod.setProdUPC(rs.getString("prodUPC"));
+			
+			return prod;
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
+		
 	}
 }
