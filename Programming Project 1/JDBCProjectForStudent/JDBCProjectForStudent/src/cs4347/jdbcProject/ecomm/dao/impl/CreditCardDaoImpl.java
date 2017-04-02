@@ -19,20 +19,23 @@ public class CreditCardDaoImpl implements CreditCardDAO
 			throws SQLException, DAOException {
 		final String insertSQL = 
 				"INSERT INTO creditcard (Customer_id, name, ccNumber, expDate, securityCode)"
-				+"VALUES (?,?,?,?)";
+				+"VALUES (?,?,?,?,?)";
 		if (creditCard == null){
 			throw new DAOException("Trying to insert a null creditcard");
 		}
 		PreparedStatement ps = null;
 		try{
-			ps = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+			ps = connection.prepareStatement(insertSQL);
 			ps.setLong(1, customerID);
 			ps.setString(2, creditCard.getName());
 			ps.setString(3, creditCard.getCcNumber());
 			ps.setString(4, creditCard.getExpDate());
 			ps.setString(5, creditCard.getSecurityCode());
 			
-			ps.executeUpdate();
+			int res = ps.executeUpdate();
+			if(res != 1) {
+				throw new DAOException("Create Did Not Update Expected Number Of Rows");
+			}
 			return creditCard;
 		}
 		finally{
@@ -70,13 +73,30 @@ public class CreditCardDaoImpl implements CreditCardDAO
 			
 		}
 		finally{
-			
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
 		}
 	}
 
 	@Override
 	public void deleteForCustomerID(Connection connection, Long customerID) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
+		final String deleteSQL = 
+				"DELETE FROM creditcard WHERE Customer_id = ?";
+		if(customerID == null){
+			throw new DAOException("Trying to delete creditcard with NULL Customer_id");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(deleteSQL);
+			ps.setLong(1, customerID);			
+			ps.executeUpdate();
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
 		
 	}
 
