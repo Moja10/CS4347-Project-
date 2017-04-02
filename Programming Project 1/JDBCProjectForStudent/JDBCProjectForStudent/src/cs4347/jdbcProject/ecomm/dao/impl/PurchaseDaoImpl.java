@@ -5,11 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import cs4347.jdbcProject.ecomm.dao.PurchaseDAO;
 import cs4347.jdbcProject.ecomm.entity.Purchase;
 import cs4347.jdbcProject.ecomm.services.PurchaseSummary;
 import cs4347.jdbcProject.ecomm.util.DAOException;
+import cs4347.sakilaEntities.Customer;
 
 public class PurchaseDaoImpl implements PurchaseDAO
 {
@@ -130,19 +133,54 @@ public class PurchaseDaoImpl implements PurchaseDAO
 			}
 		}
 	}
-	List<Purchase> retrieveForCustomerID(Connection connection, Long customerID) throws SQLException, DAOException{
-	
-	/**
-	 * Retrieve purchases for the given product id
-	 */
+	public List<Purchase> retrieveForCustomerID(Connection connection, Long customerID) throws SQLException, DAOException{
+		final String querySQL = 
+				"SELECT id, productID, customerID, purchaseAmount, purchaseDate "
+				+"FROM purchase "
+				+"WHERE customerID = ?";
+		if((customerID < 0)){
+			throw new DAOException("Invalid customer ID provided");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(querySQL);
+			ps.setLong(1, customerID);  //Set positional parameter #1 in String selectSQL to var id
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
+				return null;
+			}
+			// Create a new list to store the results in
+			List<Purchase> result = new ArrayList<Purchase>();
+			while(rs.next()){
+				// Create a new Purchase object
+				Purchase purch = new Purchase();
+				// Fill Purchase object with values from ResultSet
+				purch.setId(rs.getLong("ID"));
+				purch.setProductID(rs.getLong("productID"));
+				purch.setCustomerID(rs.getLong("customerID"));
+				purch.setPurchaseAmount(rs.getDouble("purchaseAmount"));
+				purch.setPurchaseDate(rs.getDate("purchaseDate"));
+				// Add purch object to result arraylist
+				result.add(purch);
+			}
+			return result;
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
 	}
-	List<Purchase> retrieveForProductID(Connection connection, Long productID) throws SQLException, DAOException{
-	
-	/**
-	 * Retrieve purchase summary for the given customer id
-	 */
+	public List<Purchase> retrieveForProductID(Connection connection, Long productID) throws SQLException, DAOException{
+		final String querySQL = 
+				"SELECT id, productID, customerID, purchaseAmount, purchaseDate "
+				+"FROM purchase "
+				+"WHERE productID = ?";
+		if((productID < 0)){
+			throw new DAOException("Invalid product ID provided");
+		}
 	}
-	PurchaseSummary retrievePurchaseSummary(Connection connection, Long customerID) throws SQLException, DAOException{
+	public PurchaseSummary retrievePurchaseSummary(Connection connection, Long customerID) throws SQLException, DAOException{
 		
 	}
 }
