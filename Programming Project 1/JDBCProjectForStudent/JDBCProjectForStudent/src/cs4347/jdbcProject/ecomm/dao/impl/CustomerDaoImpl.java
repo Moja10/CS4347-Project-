@@ -22,7 +22,7 @@ public class CustomerDaoImpl implements CustomerDAO
 	
 	public Customer create(Connection connection, Customer customer) throws SQLException, DAOException
 	{
-		final String insertSQLQuery = "INSERT INTO CUSTOMER(id, firstName, lastName, gender, dob, email) VALUES (?, ?, ?, ?, ?, ?);";  
+		final String insertSQL = "INSERT INTO CUSTOMER(id, firstName, lastName, gender, dob, email) VALUES (?, ?, ?, ?, ?, ?);";  
 		// throw DAOException if the ID is NULL 
 		if (customer.getId() != null)
 		{
@@ -31,7 +31,7 @@ public class CustomerDaoImpl implements CustomerDAO
 		PreparedStatement ps = null;
 		try
 		{
-			ps = connection.prepareStatement(insertSQLQuery, Statement.RETURN_GENERATED_KEYS);
+			ps = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
 			ps.setLong(1, 0); //set ID to 0 before getting auto-increment ID
 			ps.setString(2, customer.getFirstName());
 			ps.setString(3, customer.getLastName());
@@ -66,14 +66,14 @@ public class CustomerDaoImpl implements CustomerDAO
 	public Customer retrieve(Connection connection, Long id) throws SQLException, DAOException
 	{
 		
-		final String selectSQLQuery = "SELECT id, firstName, lastname, gender, dob, email FROM customer where id = ?";
+		final String selectSQL = "SELECT id, firstName, lastname, gender, dob, email FROM customer where id = ?";
 		// throw DAOException if the ID is NULL 
 		if (id == null){
 				throw new DAOException("Trying to retrieve Customer with a NULL ID");
 		}
 		PreparedStatement ps = null;
 		try{
-			ps = connection.prepareStatement(selectSQLQuery);
+			ps = connection.prepareStatement(selectSQL);
 			ps.setLong(1, id);
 			ResultSet rs = ps.executeQuery();
 			if(!rs.next()) {
@@ -101,8 +101,7 @@ public class CustomerDaoImpl implements CustomerDAO
 	
 	public int update(Connection connection, Customer customer) throws SQLException, DAOException
 	{
-		final String updateSQL = 
-				"UPDATE customer SET firstName = ?, lastname = ?, gender = ?, dob = ?, email = ? WHERE id = ?;";
+		final String updateSQL = "UPDATE customer SET firstName = ?, lastname = ?, gender = ?, dob = ?, email = ? WHERE id = ?;";
 		Long id = customer.getId();
 		if (id == null) {
 			throw new DAOException("Trying to update Customer with NULL ID");
@@ -127,7 +126,9 @@ public class CustomerDaoImpl implements CustomerDAO
 	
 	public int delete(Connection connection, Long id) throws SQLException, DAOException
 	{
+		
 		final String deleteSQL =  "DELETE FROM CUSTOMER WHERE ID = ?;";
+		
 		if (id == null) {
 			throw new DAOException("Trying to delete Customer with NULL ID");
 		}
