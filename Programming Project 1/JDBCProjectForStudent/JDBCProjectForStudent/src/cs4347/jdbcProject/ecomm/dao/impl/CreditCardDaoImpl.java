@@ -44,8 +44,34 @@ public class CreditCardDaoImpl implements CreditCardDAO
 
 	@Override
 	public CreditCard retrieveForCustomerID(Connection connection, Long customerID) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		final String querySQL = 
+				"SELECT Customer_id, name, ccNumber, expDate, securityCode "
+				+"FROM creditcard "
+				+ "WHERE Customer_id = ?";
+		if(customerID == null){
+			throw new DAOException("Trying to retrive creditcard with NULL Customer_id");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(querySQL);
+			ps.setLong(1, customerID);
+			ResultSet rs = ps.executeQuery();
+			if(!rs.next()){
+					return null;
+			}
+			// Create a new CreditCard object to store the result in
+			CreditCard ccard = new CreditCard();
+			ccard.setName(rs.getString("name"));
+			ccard.setCcNumber(rs.getString("ccNumber"));
+			ccard.setExpDate(rs.getString("expDate"));
+			ccard.setSecurityCode(rs.getString("securityCode"));
+			
+			return ccard;
+			
+		}
+		finally{
+			
+		}
 	}
 
 	@Override
