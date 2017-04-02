@@ -111,10 +111,24 @@ public class PurchaseDaoImpl implements PurchaseDAO
 		}
 	}
 	public int delete(Connection connection, Long id) throws SQLException, DAOException{
-	
-	/**
-	 * Retrieve purchases for the given customer id
-	 */
+		final String deleteSQL = 
+				"DELETE FROM purchase WHERE id = ?";
+		if(id == null){
+			throw new DAOException("Trying to delete from Purchase with a NULL ID");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(deleteSQL);
+			ps.setLong(1, id);
+			
+			int rows = ps.executeUpdate();
+			return rows;
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
 	}
 	List<Purchase> retrieveForCustomerID(Connection connection, Long customerID) throws SQLException, DAOException{
 	
