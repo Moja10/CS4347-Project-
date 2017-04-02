@@ -8,7 +8,6 @@ import java.util.List;
 
 import cs4347.jdbcProject.ecomm.dao.ProductDAO;
 import cs4347.jdbcProject.ecomm.entity.Product;
-import cs4347.jdbcProject.ecomm.entity.prodase;
 import cs4347.jdbcProject.ecomm.util.DAOException;
 
 public class ProductDaoImpl implements ProductDAO
