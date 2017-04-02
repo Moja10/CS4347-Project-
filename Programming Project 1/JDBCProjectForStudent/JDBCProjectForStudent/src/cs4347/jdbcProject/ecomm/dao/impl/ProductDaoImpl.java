@@ -49,7 +49,7 @@ public class ProductDaoImpl implements ProductDAO
 				"SELECT id, prodName, prodDescription, prodCategory, prodUPC"
 				+"FROM product WHERE id = ?";
 		if (id == null){
-				throw new DAOException("Trying to retrieve prodase with a NULL ID");
+				throw new DAOException("Trying to retrieve product with a NULL ID");
 		}
 		PreparedStatement ps = null;
 		try{
@@ -59,9 +59,9 @@ public class ProductDaoImpl implements ProductDAO
 			if (!rs.next()) {
 				return null;
 			}
-			// Create a new prodase object
+			// Create a new product object
 			Product prod = new Product();
-			// Fill prodase object with values from ResultSet
+			// Fill product object with values from ResultSet
 			prod.setId(rs.getLong("ID"));
 			prod.setProdName(rs.getString("prodName"));
 			prod.setProdDescription(rs.getString("prodDescription"));
@@ -77,8 +77,28 @@ public class ProductDaoImpl implements ProductDAO
 	}
 
 	public int update(Connection connection, Product product) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
-		return 0;
+		final String updateSQL = 
+				"UPDATE product SET prodName = ?, prodDecription = ?, prodCategory= ?, prodUPC = ?"
+				+ "WHERE id = ?";
+		if (product.getId() == null) {
+			throw new DAOException("Trying to update Product with a NULL ID");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(updateSQL);
+			ps.setString(1, product.getProdName());
+			ps.setString(2, product.getProdDescription());
+			ps.setInt(3, product.getProdCategory());
+			ps.setString(4, product.getProdUPC());
+			ps.setLong(5, product.getId());
+			int rows = ps.executeUpdate();
+			return rows;			
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
 	}
 
 	public int delete(Connection connection, Long id) throws SQLException, DAOException {
