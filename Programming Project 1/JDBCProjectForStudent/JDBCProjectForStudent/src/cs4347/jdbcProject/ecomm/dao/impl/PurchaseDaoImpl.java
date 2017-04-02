@@ -12,7 +12,6 @@ import cs4347.jdbcProject.ecomm.dao.PurchaseDAO;
 import cs4347.jdbcProject.ecomm.entity.Purchase;
 import cs4347.jdbcProject.ecomm.services.PurchaseSummary;
 import cs4347.jdbcProject.ecomm.util.DAOException;
-import cs4347.sakilaEntities.Customer;
 
 public class PurchaseDaoImpl implements PurchaseDAO
 {
@@ -104,6 +103,7 @@ public class PurchaseDaoImpl implements PurchaseDAO
 			ps.setLong(2, purchase.getCustomerID());
 			ps.setDouble(3, purchase.getPurchaseAmount());
 			ps.setDate(4, purchase.getPurchaseDate());
+			ps.setLong(5, purchase.getId());
 			int rows = ps.executeUpdate();
 			return rows;			
 		}
