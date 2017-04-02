@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import cs4347.jdbcProject.ecomm.dao.CreditCardDAO;
 import cs4347.jdbcProject.ecomm.entity.CreditCard;
