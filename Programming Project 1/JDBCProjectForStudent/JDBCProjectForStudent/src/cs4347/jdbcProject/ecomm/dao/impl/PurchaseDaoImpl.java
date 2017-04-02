@@ -48,21 +48,44 @@ public class PurchaseDaoImpl implements PurchaseDAO
 			keyRS.next();
 			int lastKey = keyRS.getInt(1);
 			purchase.setId((long)lastKey);
-
+			return purchase;
 		}
 		finally{
 			if (ps != null && !ps.isClosed()) {
 				ps.close();
 			}
 		}
-		return purchase;
 	}
 	public Purchase retrieve(Connection connection, Long id) throws SQLException, DAOException{
-	
-	/**
-	 * The update method must throw DAOException if the provided 
-	 * Purchase has a NULL id. 
-	 */
+		final String selectSQL =
+				"SELECT id, productID, customerID, purchaseDate, purchaseAmount "
+				+"FROM purchase WHERE ID = ?";
+		if (id == null){
+				throw new DAOException("Trying to retrieve Purchase with null ID");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(selectSQL);
+			ps.setLong(1, id);  //Set positional parameter #1 in String selectSQL to var id
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
+				return null;
+			}
+			// Create a new Purchase object
+			Purchase purch = new Purchase();
+			// Fill Purchase object with values from ResultSet
+			purch.setId(rs.getLong("ID"));
+			purch.setProductID(rs.getLong("productID"));
+			purch.setCustomerID(rs.getLong("customerID"));
+			purch.setPurchaseAmount(rs.getDouble("purchaseAmount"));
+			purch.setPurchaseDate(rs.getDate("purchaseDate"));
+			return purch;
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
 	}
 	public int update(Connection connection, Purchase purchase) throws SQLException, DAOException{
 	
