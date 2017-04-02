@@ -29,7 +29,7 @@ public class PurchaseDaoImpl implements PurchaseDAO
 				+ "VALUES (?,?,?,?)";  
 		// throw DAOException if the ID is not NULL 
 		if (purchase.getId() != null){
-			throw new DAOException("Trying to insert Purchase with NON-NULL ID");
+			throw new DAOException("Trying to insert Purchase with a NON-NULL ID");
 		}
 		PreparedStatement ps = null;
 		try{
@@ -61,7 +61,7 @@ public class PurchaseDaoImpl implements PurchaseDAO
 				"SELECT id, productID, customerID, purchaseDate, purchaseAmount "
 				+"FROM purchase WHERE ID = ?";
 		if (id == null){
-				throw new DAOException("Trying to retrieve Purchase with null ID");
+				throw new DAOException("Trying to retrieve Purchase with a NULL ID");
 		}
 		PreparedStatement ps = null;
 		try{
@@ -88,11 +88,27 @@ public class PurchaseDaoImpl implements PurchaseDAO
 		}
 	}
 	public int update(Connection connection, Purchase purchase) throws SQLException, DAOException{
-	
-	/**
-	 * The update method must throw DAOException if the provided 
-	 * ID is null. 
-	 */
+		final String updateSQL = 
+				"UPDATE purchase SET productID = ?, customerID = ?, purchaseAmount = ?, purchaseDate = ?"
+				+ "WHERE id = ?";
+		if (purchase.getID == null) {
+			throw new DAOException("Trying to update Purchase with a NULL ID");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(updateSQL);
+			ps.setLong(1, purchase.getProductID());
+			ps.setLong(2, purchase.getCustomerID());
+			ps.setDouble(3, purchase.getPurchaseAmount());
+			ps.setDate(4, purchase.getPurchaseDate());
+			int rows = ps.executeUpdate();
+			return rows;			
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
 	}
 	public int delete(Connection connection, Long id) throws SQLException, DAOException{
 	
