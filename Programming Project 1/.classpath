@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="JDBCProjectForStudent/JDBCProjectForStudent/src"/>
+	<classpathentry kind="src" path="JDBCProjectTesting/JDBCProjectTesting/src"/>
+	<classpathentry kind="src" path="JDBCProjectTesting/JDBCProjectTesting/unitTests"/>
+	<classpathentry kind="lib" path="JDBCProjectTesting/JDBCProjectTesting/lib/mysql-connector-java-5.1.33-bin.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="JDBCProjectForStudent/JDBCProjectForStudent/bin"/>
+</classpath>
