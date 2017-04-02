@@ -95,7 +95,7 @@ public class PurchasePersistenceServiceImpl implements PurchasePersistenceServic
 		Connection connection = dataSource.getConnection();
 		try{
 			connection.setAutoCommit(false);
-			int deleteID = PurchDAOImpl.delete(connection, purchase);
+			int deleteID = PurchDAOImpl.delete(connection, id);
 			connection.commit();
 			return deleteID;
 		}
