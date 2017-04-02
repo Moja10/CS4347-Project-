@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import cs4347.jdbcProject.ecomm.dao.ProductDAO;
 import cs4347.jdbcProject.ecomm.entity.Product;
+import cs4347.jdbcProject.ecomm.entity.prodase;
 import cs4347.jdbcProject.ecomm.util.DAOException;
 
 public class ProductDaoImpl implements ProductDAO
@@ -17,7 +19,7 @@ public class ProductDaoImpl implements ProductDAO
 				+"VALUES (?,?,?,?)";
 		// throw DAOException if the ID is not NULL 
 		if (product.getId() != null){
-			throw new DAOException("Trying to insert Purchase with a NON-NULL ID");
+			throw new DAOException("Trying to insert prodase with a NON-NULL ID");
 		}
 		PreparedStatement ps = null;
 		try{
@@ -41,5 +43,57 @@ public class ProductDaoImpl implements ProductDAO
 				ps.close();
 			}
 		}
+	}
+
+	public Product retrieve(Connection connection, Long id) throws SQLException, DAOException {
+		final String selectSQL =
+				"SELECT id, prodName, prodDescription, prodCategory, prodUPC"
+				+"FROM product WHERE id = ?";
+		if (id == null){
+				throw new DAOException("Trying to retrieve prodase with a NULL ID");
+		}
+		PreparedStatement ps = null;
+		try{
+			ps = connection.prepareStatement(selectSQL);
+			ps.setLong(1, id);  //Set positional parameter #1 in String selectSQL to var id
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
+				return null;
+			}
+			// Create a new prodase object
+			Product prod = new Product();
+			// Fill prodase object with values from ResultSet
+			prod.setId(rs.getLong("ID"));
+			prod.setProdName(rs.getString("prodName"));
+			prod.setProdDescription(rs.getString("prodDescription"));
+			prod.setProdCategory(rs.getInt("prodCategory"));
+			prod.setProdUPC(rs.getString("prodUPC"));
+			return prod;
+		}
+		finally{
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
+	}
+
+	public int update(Connection connection, Product product) throws SQLException, DAOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int delete(Connection connection, Long id) throws SQLException, DAOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public List<Product> retrieveByCategory(Connection connection, int category) throws SQLException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Product retrieveByUPC(Connection connection, String upc) throws SQLException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
