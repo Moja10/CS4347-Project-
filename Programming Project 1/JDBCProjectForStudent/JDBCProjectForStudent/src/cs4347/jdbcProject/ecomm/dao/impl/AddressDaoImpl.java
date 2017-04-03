@@ -13,7 +13,7 @@ public class AddressDaoImpl implements AddressDAO
 {
 		public Address create(Connection connection, Address address, Long customerID) throws SQLException, DAOException
 		{
-			final String insertSQL = "INSERT INTO address (address1, address2, city, state, zipcode, customerID) VALUES (?, ?, ?, ?, ?, ?);";
+			final String insertSQL = "INSERT INTO address (address1, address2, city, state, zipcode, customer_ID) VALUES (?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement ps = null;
 			//CustomerPersistenceService should call AddressPersistenceService to call this create method

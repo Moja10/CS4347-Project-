@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `simple_company`.`address` (
   `address2` TEXT NULL DEFAULT NULL,
   `city` TEXT NULL DEFAULT NULL,
   `state` TEXT NULL DEFAULT NULL,
-  `zipcode` MEDIUMINT(9) NULL DEFAULT NULL,
+  `zipcode` TEXT NULL DEFAULT NULL,
   `Customer_id` BIGINT(20) NOT NULL,
   CONSTRAINT `fk_Address_Customer1`
     FOREIGN KEY (`Customer_id`)
