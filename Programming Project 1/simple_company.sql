@@ -5,6 +5,9 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
 -- Schema simple_company
 -- -----------------------------------------------------
 
@@ -15,98 +18,98 @@ CREATE SCHEMA IF NOT EXISTS `simple_company` DEFAULT CHARACTER SET utf8 ;
 USE `simple_company` ;
 
 -- -----------------------------------------------------
--- Table `simple_company`.`Purchase`
+-- Table `simple_company`.`customer`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `simple_company`.`Purchase` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `productID` BIGINT NULL,
-  `customerID` BIGINT NULL,
-  `purchaseDate` DATE NULL,
-  `purchaseAmount` DECIMAL NULL,
+CREATE TABLE IF NOT EXISTS `simple_company`.`customer` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `firstName` TEXT NULL DEFAULT NULL,
+  `lastName` TEXT NULL DEFAULT NULL,
+  `gender` CHAR(1) NULL DEFAULT NULL,
+  `dob` DATE NULL DEFAULT NULL,
+  `email` TEXT NULL DEFAULT NULL,
+  `address` VARCHAR(45) NULL DEFAULT NULL,
+  `creditCard` VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `simple_company`.`Product`
+-- Table `simple_company`.`address`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `simple_company`.`Product` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `prodName` TEXT NULL,
-  `prodDescription` TEXT NULL,
-  `prodCategory` INT NULL,
-  `prodUPC` TEXT NULL,
-  `Purchase_id` BIGINT NOT NULL,
-  PRIMARY KEY (`id`, `Purchase_id`),
-  INDEX `fk_Product_Purchase_idx` (`Purchase_id` ASC),
-  CONSTRAINT `fk_Product_Purchase`
-    FOREIGN KEY (`Purchase_id`)
-    REFERENCES `simple_company`.`Purchase` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `simple_company`.`Customer`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `simple_company`.`Customer` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `firstName` TEXT NULL,
-  `lastName` TEXT NULL,
-  `gender` CHAR(1) NULL,
-  `dob` DATE NULL,
-  `email` TEXT NULL,
-  `address` VARCHAR(45) NULL,
-  `creditCard` VARCHAR(45) NULL,
-  `Purchase_id` BIGINT NOT NULL,
-  PRIMARY KEY (`id`, `Purchase_id`),
-  INDEX `fk_Customer_Purchase1_idx` (`Purchase_id` ASC),
-  CONSTRAINT `fk_Customer_Purchase1`
-    FOREIGN KEY (`Purchase_id`)
-    REFERENCES `simple_company`.`Purchase` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `simple_company`.`CreditCard`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `simple_company`.`CreditCard` (
-  `name` TEXT NOT NULL,
-  `ccNumber` TEXT NULL,
-  `expDate` TEXT NULL,
-  `securityCode` TEXT NULL,
-  `Customer_id` BIGINT NOT NULL,
-  `Customer_Purchase_id` BIGINT NOT NULL,
-  PRIMARY KEY (`Customer_id`, `Customer_Purchase_id`),
-  CONSTRAINT `fk_CreditCard_Customer1`
-    FOREIGN KEY (`Customer_id` , `Customer_Purchase_id`)
-    REFERENCES `simple_company`.`Customer` (`id` , `Purchase_id`)
-    ON DELETE CASCADE 
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `simple_company`.`Address`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `simple_company`.`Address` (
+CREATE TABLE IF NOT EXISTS `simple_company`.`address` (
   `address1` TEXT NOT NULL,
-  `address2` TEXT NULL,
-  `city` TEXT NULL,
-  `state` TEXT NULL,
-  `zipcode` MEDIUMINT NULL,
-  `Customer_id` BIGINT NOT NULL,
-  `Customer_Purchase_id` BIGINT NOT NULL,
-  PRIMARY KEY (`Customer_id`, `Customer_Purchase_id`),
+  `address2` TEXT NULL DEFAULT NULL,
+  `city` TEXT NULL DEFAULT NULL,
+  `state` TEXT NULL DEFAULT NULL,
+  `zipcode` TEXT NULL DEFAULT NULL,
+  `Customer_id` BIGINT(20) NOT NULL,
   CONSTRAINT `fk_Address_Customer1`
-    FOREIGN KEY (`Customer_id` , `Customer_Purchase_id`)
-    REFERENCES `simple_company`.`Customer` (`id` , `Purchase_id`)
-    ON DELETE CASCADE 
+    FOREIGN KEY (`Customer_id`)
+    REFERENCES `simple_company`.`customer` (`id`)
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `simple_company`.`creditcard`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `simple_company`.`creditcard` (
+  `name` TEXT NOT NULL,
+  `ccNumber` TEXT NULL DEFAULT NULL,
+  `expDate` TEXT NULL DEFAULT NULL,
+  `securityCode` TEXT NULL DEFAULT NULL,
+  `Customer_id` BIGINT(20) NOT NULL,
+  INDEX `fk_CreditCard_Customer1` (`Customer_id` ASC),
+  CONSTRAINT `fk_CreditCard_Customer1`
+    FOREIGN KEY (`Customer_id`)
+    REFERENCES `simple_company`.`customer` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `simple_company`.`product`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `simple_company`.`product` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `prodName` TEXT NULL DEFAULT NULL,
+  `prodDescription` TEXT NULL DEFAULT NULL,
+  `prodCategory` INT(11) NULL DEFAULT NULL,
+  `prodUPC` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `simple_company`.`purchase`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `simple_company`.`purchase` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `productID` BIGINT(20) NULL DEFAULT NULL,
+  `customerID` BIGINT(20) NULL DEFAULT NULL,
+  `purchaseDate` DATE NULL DEFAULT NULL,
+  `purchaseAmount` DECIMAL(10,0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_Purchase_Product1_idx` (`productID` ASC),
+  INDEX `fk_Purchase_Customer1_idx` (`customerID` ASC),
+  CONSTRAINT `fk_Purchase_Product1`
+    FOREIGN KEY (`productID`)
+    REFERENCES `simple_company`.`product` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Purchase_Customer1`
+    FOREIGN KEY (`customerID`)
+    REFERENCES `simple_company`.`customer` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
