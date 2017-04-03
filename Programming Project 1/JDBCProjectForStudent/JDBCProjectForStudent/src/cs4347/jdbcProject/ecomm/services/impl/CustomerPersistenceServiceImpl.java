@@ -110,8 +110,44 @@ public class CustomerPersistenceServiceImpl implements CustomerPersistenceServic
 	}
 
 	public int update(Customer customer) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
-		return 0;
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+		AddressDAO addressDAO = new AddressDaoImpl();
+		CreditCardDAO creditCardDAO = new CreditCardDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			int id = customerDAO.update(connection, customer);
+			
+			// Update Address
+			Address addr = customer.getAddress();
+			// Delete current address
+			addressDAO.deleteForCustomerID(connection, customer.getId());
+			// Add updated address
+			addressDAO.create(connection, addr, customer.getId());
+			
+			// Update Credit Card
+			CreditCard ccard = customer.getCreditCard();
+			// Delete current credit card
+			creditCardDAO.deleteForCustomerID(connection, customer.getId());
+			// Add updated credit card
+			creditCardDAO.create(connection, ccard, customer.getId());
+			
+			connection.commit();
+			
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
 	}
 
 	public int delete(Long id) throws SQLException, DAOException {
