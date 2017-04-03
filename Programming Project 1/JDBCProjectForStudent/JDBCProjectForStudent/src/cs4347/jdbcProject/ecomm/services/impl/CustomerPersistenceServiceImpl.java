@@ -1,7 +1,9 @@
 package cs4347.jdbcProject.ecomm.services.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -72,6 +74,163 @@ public class CustomerPersistenceServiceImpl implements CustomerPersistenceServic
 				connection.setAutoCommit(true);
 			}
 			if (connection != null && !connection.isClosed()) {
+				connection.close();
+			}
+		}
+	}
+
+	public Customer retrieve(Long id) throws SQLException, DAOException {
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+		AddressDAO addressDAO = new AddressDaoImpl();
+		CreditCardDAO creditCardDAO = new CreditCardDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			Customer cust = customerDAO.retrieve(connection, id);
+			// Now get this customer's address
+			Address addr = addressDAO.retrieveForCustomerID(connection, id);
+			// Now get this customer's creditcard
+			CreditCard ccard = creditCardDAO.retrieveForCustomerID(connection, id);
+			// Since customer has FK attributes, we can set them here
+			cust.setAddress(addr);
+			cust.setCreditCard(ccard);
+			connection.commit();
+			// Return the customer along with address and credit card
+			return cust;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
+	}
+
+	public int update(Customer customer) throws SQLException, DAOException {
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+		AddressDAO addressDAO = new AddressDaoImpl();
+		CreditCardDAO creditCardDAO = new CreditCardDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			int result = customerDAO.update(connection, customer);
+			
+			// Update Address
+			Address addr = customer.getAddress();
+			// Delete current address
+			addressDAO.deleteForCustomerID(connection, customer.getId());
+			// Add updated address
+			addressDAO.create(connection, addr, customer.getId());
+			
+			// Update Credit Card
+			CreditCard ccard = customer.getCreditCard();
+			// Delete current credit card
+			creditCardDAO.deleteForCustomerID(connection, customer.getId());
+			// Add updated credit card
+			creditCardDAO.create(connection, ccard, customer.getId());
+			
+			connection.commit();
+			return result;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
+	}
+
+	public int delete(Long id) throws SQLException, DAOException {
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+		AddressDAO addressDAO = new AddressDaoImpl();
+		CreditCardDAO creditCardDAO = new CreditCardDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			// Delete this customer's address
+			addressDAO.deleteForCustomerID(connection, id);
+			// Delete this customer's credit card
+			creditCardDAO.deleteForCustomerID(connection, id);
+			// Delete the customer (and get row count returned)
+			int result = customerDAO.delete(connection, id);
+			
+			connection.commit();
+			return result;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
+	}
+
+	public List<Customer> retrieveByZipCode(String zipCode) throws SQLException, DAOException {
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			List <Customer> listofcust = customerDAO.retrieveByZipCode(connection, zipCode);
+			connection.commit();
+			// Return the customer along with address and credit card
+			return listofcust;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
+	}
+
+	public List<Customer> retrieveByDOB(Date startDate, Date endDate) throws SQLException, DAOException {
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			List <Customer> listofcust = customerDAO.retrieveByDOB(connection, startDate, endDate);
+			connection.commit();
+			// Return the customer along with address and credit card
+			return listofcust;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
 				connection.close();
 			}
 		}

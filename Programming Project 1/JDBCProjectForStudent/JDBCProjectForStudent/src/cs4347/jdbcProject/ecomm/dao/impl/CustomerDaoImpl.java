@@ -145,7 +145,7 @@ public class CustomerDaoImpl implements CustomerDAO
 	
 	public List<Customer> retrieveByZipCode(Connection connection, String zipCode) throws SQLException, DAOException
 	{
-		final String zipQuery = "SELECT id, firstName, lastName, gender, dob, email FROM customer INNER JOIN address ON customer.ID=address.customerID where address.zipcode = ?";
+		final String zipQuery = "SELECT id, firstName, lastName, gender, dob, email FROM customer INNER JOIN address ON customer.ID=address.customer_ID where address.zipcode = ?";
 		
 		if (zipCode == null) {
 			throw new DAOException("Trying to retrieve Customer with NULL zipCode");
