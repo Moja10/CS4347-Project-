@@ -1,9 +1,9 @@
 package cs4347.jdbcProject.ecomm.dao.impl;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import cs4347.jdbcProject.ecomm.dao.ProductDAO;
@@ -18,7 +18,7 @@ public class ProductDaoImpl implements ProductDAO
 				+"VALUES (?,?,?,?)";
 		// throw DAOException if the ID is not NULL 
 		if (product.getId() != null){
-			throw new DAOException("Trying to insert prodase with a NON-NULL ID");
+			throw new DAOException("Trying to insert product with a NON-NULL ID");
 		}
 		PreparedStatement ps = null;
 		try{
@@ -121,7 +121,6 @@ public class ProductDaoImpl implements ProductDAO
 				ps.close();
 			}
 		}
-		return 0;
 	}
 
 

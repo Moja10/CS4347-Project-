@@ -1,6 +1,6 @@
 package cs4347.jdbcProject.ecomm.services;
 
-import java.sql.Connection
+import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import java.util.List;
