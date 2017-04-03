@@ -1,7 +1,9 @@
 package cs4347.jdbcProject.ecomm.services.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -75,5 +77,55 @@ public class CustomerPersistenceServiceImpl implements CustomerPersistenceServic
 				connection.close();
 			}
 		}
+	}
+
+	public Customer retrieve(Long id) throws SQLException, DAOException {
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+		AddressDAO addressDAO = new AddressDaoImpl();
+		CreditCardDAO creditCardDAO = new CreditCardDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			Customer cust = customerDAO.retrieve(connection, id);
+			Address addr = addressDAO.retrieveForCustomerID(connection, id);
+			CreditCard ccard = creditCardDAO.retrieveForCustomerID(connection, id);
+			cust.setAddress(addr);
+			cust.setCreditCard(ccard);
+			connection.commit();
+			return cust;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
+	}
+
+	public int update(Customer customer) throws SQLException, DAOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int delete(Long id) throws SQLException, DAOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public List<Customer> retrieveByZipCode(String zipCode) throws SQLException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Customer> retrieveByDOB(Date startDate, Date endDate) throws SQLException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
