@@ -31,7 +31,7 @@ public class AddressDaoImpl implements AddressDAO
 		}
 		public Address retrieveForCustomerID(Connection connection, Long customerID) throws SQLException, DAOException
 		{
-			final String selectQuery = "SELECT address1, address2, city, state, zipcode FROM address where customerID = ?";
+			final String selectQuery = "SELECT address1, address2, city, state, zipcode FROM address where customer_ID = ?";
 			
 			if (customerID == null) {
 				throw new DAOException("Trying to retrieve Customer with NULL ID");
@@ -59,7 +59,7 @@ public class AddressDaoImpl implements AddressDAO
 		public void deleteForCustomerID(Connection connection, Long customerID) throws SQLException, DAOException
 		{
 			//In the .sql that builds the DB, the 'ON DELETE CASCADE;' will ensure the Address associated with Customer is deleted
-			final String deleteSQL =  "DELETE FROM address WHERE customerID = ?;";
+			final String deleteSQL =  "DELETE FROM address WHERE customer_ID = ?;";
 			
 			if (customerID == null) {
 				throw new DAOException("Trying to delete Customer with NULL ID");
