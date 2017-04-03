@@ -88,11 +88,15 @@ public class CustomerPersistenceServiceImpl implements CustomerPersistenceServic
 		try{
 			connection.setAutoCommit(false);
 			Customer cust = customerDAO.retrieve(connection, id);
+			// Now get this customer's address
 			Address addr = addressDAO.retrieveForCustomerID(connection, id);
+			// Now get this customer's creditcard
 			CreditCard ccard = creditCardDAO.retrieveForCustomerID(connection, id);
+			// Since customer has FK attributes, we can set them here
 			cust.setAddress(addr);
 			cust.setCreditCard(ccard);
 			connection.commit();
+			// Return the customer along with address and credit card
 			return cust;
 		}
 		catch (Exception ex){
@@ -117,7 +121,7 @@ public class CustomerPersistenceServiceImpl implements CustomerPersistenceServic
 		Connection connection = dataSource.getConnection();
 		try{
 			connection.setAutoCommit(false);
-			int id = customerDAO.update(connection, customer);
+			int result = customerDAO.update(connection, customer);
 			
 			// Update Address
 			Address addr = customer.getAddress();
@@ -134,7 +138,7 @@ public class CustomerPersistenceServiceImpl implements CustomerPersistenceServic
 			creditCardDAO.create(connection, ccard, customer.getId());
 			
 			connection.commit();
-			
+			return result;
 		}
 		catch (Exception ex){
 			// Rollback will set Autocommit back to true
@@ -151,17 +155,84 @@ public class CustomerPersistenceServiceImpl implements CustomerPersistenceServic
 	}
 
 	public int delete(Long id) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
-		return 0;
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+		AddressDAO addressDAO = new AddressDaoImpl();
+		CreditCardDAO creditCardDAO = new CreditCardDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			// Delete this customer's address
+			addressDAO.deleteForCustomerID(connection, id);
+			// Delete this customer's credit card
+			creditCardDAO.deleteForCustomerID(connection, id);
+			// Delete the customer (and get row count returned)
+			int result = customerDAO.delete(connection, id);
+			
+			connection.commit();
+			return result;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
 	}
 
 	public List<Customer> retrieveByZipCode(String zipCode) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			List <Customer> listofcust = customerDAO.retrieveByZipCode(connection, zipCode);
+			connection.commit();
+			// Return the customer along with address and credit card
+			return listofcust;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
 	}
 
 	public List<Customer> retrieveByDOB(Date startDate, Date endDate) throws SQLException, DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		CustomerDAO customerDAO = new CustomerDaoImpl();
+
+		Connection connection = dataSource.getConnection();
+		try{
+			connection.setAutoCommit(false);
+			List <Customer> listofcust = customerDAO.retrieveByDOB(connection, startDate, endDate);
+			connection.commit();
+			// Return the customer along with address and credit card
+			return listofcust;
+		}
+		catch (Exception ex){
+			// Rollback will set Autocommit back to true
+			connection.rollback();
+			throw ex;
+		}
+		finally{
+			// Autocommit is set back to true in the finally block
+			if (connection != null && !connection.isClosed()) {
+				connection.setAutoCommit(true);
+				connection.close();
+			}
+		}
 	}
 }
